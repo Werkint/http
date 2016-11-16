@@ -1,7 +1,7 @@
 {
     "name": "werkint/reactphp-http",
     "replace": {
-        "react/http": "self.version"
+        "react/http": "v0.4.2"
     },
     "description": "Library for building an evented http server.",
     "keywords": ["http"],
