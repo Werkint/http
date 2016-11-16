@@ -1,5 +1,8 @@
 {
-    "name": "react/http",
+    "name": "werkint/reactphp-http",
+    "replace": {
+        "react/http": "self.version"
+    },
     "description": "Library for building an evented http server.",
     "keywords": ["http"],
     "license": "MIT",
