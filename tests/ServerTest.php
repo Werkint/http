@@ -2,7 +2,7 @@
 
 namespace React\Tests\Http;
 
-use React\Http\RequestHeaderParser;
+use React\Http\Request;
 use React\Http\Server;
 
 class ServerTest extends TestCase
@@ -87,6 +87,38 @@ class ServerTest extends TestCase
 
         $this->assertInstanceOf('OverflowException', $error);
         $this->assertEquals('', $conn->getData());
+    }
+
+    /**
+     * @url https://github.com/reactphp/http/issues/84
+     */
+    public function testPauseResume()
+    {
+        $io = new ServerStub();
+
+        $server = new Server($io);
+        $called = false;
+        $server->on('request', function (Request $request) use (&$called) {
+            $called = true;
+
+            $request->emit('pause');
+            $request->emit('resume');
+        });
+
+        /** @var ConnectionStub|\PHPUnit_Framework_MockObject_MockObject $conn */
+        $conn = $this->getMock(ConnectionStub::class, ['pause', 'resume'], [], '', false, false);
+        $conn->expects($this->once())
+            ->method('pause')
+        ;
+        $conn->expects($this->once())
+            ->method('resume')
+        ;
+        $io->emit('connection', [$conn]);
+
+        $data = $this->createGetRequest();
+        $conn->emit('data', [$data]);
+
+        $this->assertTrue($called);
     }
 
     private function createGetRequest()
